@@ -8,6 +8,17 @@
     :root {
       color-scheme: light dark;
       font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+      --bg-grad: radial-gradient(circle at top, #1f2d53 0%, #101827 55%, #0b1020 100%);
+      --card-bg: rgba(10, 17, 34, 0.86);
+      --card-border: rgba(255, 255, 255, 0.14);
+      --text: #f9fafb;
+      --muted: #d1d5db;
+      --hint: #9ca3af;
+      --button-grad: linear-gradient(135deg, #2563eb, #9333ea);
+      --button-shadow: rgba(37, 99, 235, 0.35);
+      --result: #facc15;
+      --portrait-border: rgba(250, 204, 21, 0.65);
+      --card-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
     }
 
     * { box-sizing: border-box; }
@@ -17,24 +28,51 @@
       min-height: 100vh;
       display: grid;
       place-items: center;
-      background: radial-gradient(circle at top, #1f2d53 0%, #101827 55%, #0b1020 100%);
-      color: #f9fafb;
+      background: var(--bg-grad);
+      color: var(--text);
       padding: 1rem;
+    }
+
+    body[data-theme="light"] {
+      color-scheme: light;
+      --bg-grad: radial-gradient(circle at top, #fef3c7 0%, #f8fafc 55%, #e2e8f0 100%);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(148, 163, 184, 0.35);
+      --text: #0f172a;
+      --muted: #475569;
+      --hint: #64748b;
+      --button-grad: linear-gradient(135deg, #0ea5e9, #22c55e);
+      --button-shadow: rgba(14, 165, 233, 0.25);
+      --result: #b45309;
+      --portrait-border: rgba(180, 83, 9, 0.45);
+      --card-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
     }
 
     .card {
       width: min(94vw, 520px);
       padding: 2rem;
       border-radius: 1rem;
-      background: rgba(10, 17, 34, 0.86);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
       text-align: center;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--card-shadow);
       backdrop-filter: blur(5px);
     }
 
-    h1 { margin: 0 0 1rem; font-size: clamp(1.35rem, 4vw, 2rem); }
-    p { margin: 0.2rem 0; color: #d1d5db; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    h1 { margin: 0; font-size: clamp(1.35rem, 4vw, 2rem); }
+    p { margin: 0.2rem 0; color: var(--muted); }
 
     button {
       margin-top: 1.2rem;
@@ -44,19 +82,36 @@
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(135deg, #2563eb, #9333ea);
+      background: var(--button-grad);
       color: white;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 8px 20px var(--button-shadow);
     }
 
     button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(147, 51, 234, 0.4); }
+
+    .theme-toggle {
+      margin-top: 0;
+      padding: 0.45rem 0.95rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      box-shadow: none;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: none;
+      background: rgba(148, 163, 184, 0.2);
+    }
 
     .result {
       margin-top: 1.2rem;
       font-size: clamp(1.5rem, 6vw, 2.1rem);
       font-weight: 800;
-      color: #facc15;
+      color: var(--result);
       min-height: 2.2rem;
     }
 
@@ -66,17 +121,30 @@
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 0.75rem;
-      border: 2px solid rgba(250, 204, 21, 0.65);
+      border: 2px solid var(--portrait-border);
       box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
       display: none;
     }
 
-    .hint { margin-top: 0.8rem; font-size: 0.86rem; color: #9ca3af; }
+    .hint { margin-top: 0.8rem; font-size: 0.86rem; color: var(--hint); }
+
+    @media (max-width: 520px) {
+      .toolbar {
+        flex-direction: column;
+      }
+
+      .theme-toggle {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <main class="card">
-    <h1>🎲 랜덤 롤 챔피언 뽑기</h1>
+    <div class="toolbar">
+      <h1>🎲 랜덤 롤 챔피언 뽑기</h1>
+      <button id="themeToggle" class="theme-toggle" type="button" aria-label="테마 변경">다크 모드</button>
+    </div>
     <p>버튼을 눌러 오늘의 챔피언을 정해보세요!</p>
     <button id="pickButton" type="button">챔피언 뽑기</button>
     <div id="result" class="result">아직 선택되지 않았어요</div>
@@ -113,6 +181,7 @@
     const button = document.getElementById("pickButton");
     const result = document.getElementById("result");
     const portrait = document.getElementById("portrait");
+    const themeToggle = document.getElementById("themeToggle");
 
     let audioContext;
 
@@ -164,6 +233,21 @@
         oscLayer.stop(end);
       });
     }
+
+    function applyTheme(theme) {
+      document.body.dataset.theme = theme;
+      themeToggle.textContent = theme === "dark" ? "화이트 모드" : "다크 모드";
+    }
+
+    const storedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    applyTheme(storedTheme || (prefersDark ? "dark" : "light"));
+
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+      localStorage.setItem("theme", nextTheme);
+      applyTheme(nextTheme);
+    });
 
     button.addEventListener("click", () => {
       const selectedChampion = champions[Math.floor(Math.random() * champions.length)];
