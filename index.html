@@ -201,6 +201,17 @@
       color: var(--hint);
     }
 
+    .comments {
+      width: min(94vw, 720px);
+      margin: 2.5rem auto 0;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(5px);
+    }
+
     @media (max-width: 520px) {
       .toolbar {
         flex-direction: column;
@@ -249,6 +260,29 @@
       </div>
     </form>
   </main>
+
+  <section class="comments" aria-label="댓글">
+    <div id="disqus_thread"></div>
+  </section>
+
+  <script>
+      /**
+      *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
+      /*
+      var disqus_config = function () {
+      this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+      this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+      };
+      */
+      (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document, s = d.createElement('script');
+      s.src = 'https://randomlol-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+      })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
   <script>
     const ddragonVersion = "14.24.1";
