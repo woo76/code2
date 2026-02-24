@@ -1,14 +1,180 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <title>랜덤 롤 챔피언 뽑기</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Pretendard", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #1f2d53 0%, #101827 55%, #0b1020 100%);
+      color: #f9fafb;
+      padding: 1rem;
+    }
+
+    .card {
+      width: min(94vw, 520px);
+      padding: 2rem;
+      border-radius: 1rem;
+      background: rgba(10, 17, 34, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      text-align: center;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+    }
+
+    h1 { margin: 0 0 1rem; font-size: clamp(1.35rem, 4vw, 2rem); }
+    p { margin: 0.2rem 0; color: #d1d5db; }
+
+    button {
+      margin-top: 1.2rem;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.75rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2563eb, #9333ea);
+      color: white;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+    }
+
+    button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(147, 51, 234, 0.4); }
+
+    .result {
+      margin-top: 1.2rem;
+      font-size: clamp(1.5rem, 6vw, 2.1rem);
+      font-weight: 800;
+      color: #facc15;
+      min-height: 2.2rem;
+    }
+
+    .portrait {
+      margin: 1rem auto 0;
+      width: 160px;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 0.75rem;
+      border: 2px solid rgba(250, 204, 21, 0.65);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
+      display: none;
+    }
+
+    .hint { margin-top: 0.8rem; font-size: 0.86rem; color: #9ca3af; }
+  </style>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <main class="card">
+    <h1>🎲 랜덤 롤 챔피언 뽑기</h1>
+    <p>버튼을 눌러 오늘의 챔피언을 정해보세요!</p>
+    <button id="pickButton" type="button">챔피언 뽑기</button>
+    <div id="result" class="result">아직 선택되지 않았어요</div>
+    <img id="portrait" class="portrait" alt="챔피언 초상화" />
+    <p class="hint">※ 챔피언 콘셉트별 고유 사운드가 재생됩니다.</p>
+  </main>
+
+  <script>
+    const ddragonVersion = "14.24.1";
+
+    const champions = [
+      { name: "아리", id: "Ahri", sound: { wave: "sine", notes: [0, 4, 7, 11], root: 294, step: 0.11, brightness: 1900 } },
+      { name: "야스오", id: "Yasuo", sound: { wave: "sawtooth", notes: [0, 7, 10, 14], root: 164, step: 0.08, brightness: 1200 } },
+      { name: "리 신", id: "LeeSin", sound: { wave: "triangle", notes: [0, 3, 5, 10], root: 185, step: 0.09, brightness: 1500 } },
+      { name: "럭스", id: "Lux", sound: { wave: "sine", notes: [0, 4, 9, 12], root: 330, step: 0.12, brightness: 2500 } },
+      { name: "가렌", id: "Garen", sound: { wave: "square", notes: [0, 2, 5, 7], root: 147, step: 0.1, brightness: 1000 } },
+      { name: "징크스", id: "Jinx", sound: { wave: "square", notes: [0, 6, 10, 13], root: 247, step: 0.07, brightness: 2100 } },
+      { name: "아칼리", id: "Akali", sound: { wave: "triangle", notes: [0, 1, 5, 8], root: 208, step: 0.085, brightness: 1350 } },
+      { name: "이즈리얼", id: "Ezreal", sound: { wave: "sine", notes: [0, 4, 7, 12], root: 262, step: 0.1, brightness: 2200 } },
+      { name: "아트록스", id: "Aatrox", sound: { wave: "sawtooth", notes: [0, 3, 6, 8], root: 110, step: 0.11, brightness: 900 } },
+      { name: "티모", id: "Teemo", sound: { wave: "triangle", notes: [0, 7, 12, 16], root: 392, step: 0.075, brightness: 2600 } },
+      { name: "케이틀린", id: "Caitlyn", sound: { wave: "sine", notes: [0, 2, 7, 12], root: 233, step: 0.1, brightness: 1700 } },
+      { name: "카이사", id: "Kaisa", sound: { wave: "sawtooth", notes: [0, 5, 8, 13], root: 220, step: 0.085, brightness: 1400 } },
+      { name: "피오라", id: "Fiora", sound: { wave: "triangle", notes: [0, 4, 8, 12], root: 196, step: 0.09, brightness: 1600 } },
+      { name: "베인", id: "Vayne", sound: { wave: "square", notes: [0, 3, 8, 10], root: 174, step: 0.085, brightness: 1050 } },
+      { name: "레오나", id: "Leona", sound: { wave: "sine", notes: [0, 4, 7, 12], root: 277, step: 0.1, brightness: 2400 } },
+      { name: "오리아나", id: "Orianna", sound: { wave: "triangle", notes: [0, 2, 6, 9], root: 247, step: 0.095, brightness: 1800 } },
+      { name: "블리츠크랭크", id: "Blitzcrank", sound: { wave: "square", notes: [0, 5, 10, 12], root: 131, step: 0.08, brightness: 1300 } },
+      { name: "사일러스", id: "Sylas", sound: { wave: "sawtooth", notes: [0, 1, 6, 11], root: 156, step: 0.09, brightness: 1150 } },
+      { name: "제드", id: "Zed", sound: { wave: "triangle", notes: [0, 3, 7, 9], root: 185, step: 0.075, brightness: 1250 } },
+      { name: "세트", id: "Sett", sound: { wave: "square", notes: [0, 2, 4, 7], root: 123, step: 0.1, brightness: 950 } }
+    ];
+
+    const button = document.getElementById("pickButton");
+    const result = document.getElementById("result");
+    const portrait = document.getElementById("portrait");
+
+    let audioContext;
+
+    function getPortraitUrl(championId) {
+      return `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img/champion/${championId}.png`;
+    }
+
+    function toFrequency(root, semitoneOffset) {
+      return root * Math.pow(2, semitoneOffset / 12);
+    }
+
+    function playChampionSound(profile) {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      const now = audioContext.currentTime + 0.02;
+      const filter = audioContext.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = profile.brightness;
+      filter.Q.value = 1.4;
+      filter.connect(audioContext.destination);
+
+      profile.notes.forEach((semitone, i) => {
+        const start = now + i * profile.step;
+        const end = start + profile.step * 0.92;
+
+        const oscMain = audioContext.createOscillator();
+        const oscLayer = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        const freq = toFrequency(profile.root, semitone);
+        oscMain.type = profile.wave;
+        oscMain.frequency.value = freq;
+        oscLayer.type = "sine";
+        oscLayer.frequency.value = freq * 2;
+
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.19, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+        oscMain.connect(gain);
+        oscLayer.connect(gain);
+        gain.connect(filter);
+
+        oscMain.start(start);
+        oscLayer.start(start);
+        oscMain.stop(end);
+        oscLayer.stop(end);
+      });
+    }
+
+    button.addEventListener("click", () => {
+      const selectedChampion = champions[Math.floor(Math.random() * champions.length)];
+
+      result.textContent = selectedChampion.name;
+      portrait.src = getPortraitUrl(selectedChampion.id);
+      portrait.alt = `${selectedChampion.name} 초상화`;
+      portrait.style.display = "block";
+
+      playChampionSound(selectedChampion.sound);
+    });
+  </script>
 </body>
 </html>
