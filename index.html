@@ -128,6 +128,75 @@
 
     .hint { margin-top: 0.8rem; font-size: 0.86rem; color: var(--hint); }
 
+    .divider {
+      height: 1px;
+      margin: 1.6rem 0 1.2rem;
+      background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+    }
+
+    .form-title {
+      margin: 0 0 0.4rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .form-desc {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    form {
+      display: grid;
+      gap: 0.7rem;
+      text-align: left;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border-radius: 0.75rem;
+      border: 1px solid var(--card-border);
+      padding: 0.7rem 0.9rem;
+      background: rgba(15, 23, 42, 0.2);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    body[data-theme="light"] input,
+    body[data-theme="light"] textarea {
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .submit-button {
+      margin-top: 0;
+      padding: 0.7rem 1.4rem;
+    }
+
+    .form-note {
+      font-size: 0.8rem;
+      color: var(--hint);
+    }
+
     @media (max-width: 520px) {
       .toolbar {
         flex-direction: column;
@@ -135,6 +204,11 @@
 
       .theme-toggle {
         width: 100%;
+      }
+
+      .form-actions {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -150,6 +224,25 @@
     <div id="result" class="result">아직 선택되지 않았어요</div>
     <img id="portrait" class="portrait" alt="챔피언 초상화" />
     <p class="hint">※ 챔피언 콘셉트별 고유 사운드가 재생됩니다.</p>
+
+    <div class="divider" role="presentation"></div>
+    <h2 class="form-title">제휴 문의</h2>
+    <p class="form-desc">간단한 정보와 문의 내용을 남겨주시면 빠르게 연락드릴게요.</p>
+    <form action="https://formspree.io/f/xdalpqoj" method="POST">
+      <label for="name">이름</label>
+      <input id="name" name="name" type="text" autocomplete="name" required />
+
+      <label for="email">이메일</label>
+      <input id="email" name="email" type="email" autocomplete="email" required />
+
+      <label for="message">문의 내용</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <div class="form-actions">
+        <button class="submit-button" type="submit">제휴 문의 보내기</button>
+        <span class="form-note">※ 1-2영업일 내 회신드립니다.</span>
+      </div>
+    </form>
   </main>
 
   <script>
